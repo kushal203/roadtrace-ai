@@ -2,7 +2,7 @@
 
 > **Real-Time Edge Road Segmentation, Dynamic Centerline Trajectory Estimation & Obstacle Detection**
 
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-brightgreen?logo=vercel)](https://temporary-flying-fjord-idncre6.vercel.app)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live%20Demo-brightgreen?logo=vercel)](https://roadtrace-ai.vercel.app)
 [![Hardware](https://img.shields.io/badge/GPU-RTX%204050%20(6GB)-76B900?logo=nvidia)](https://nvidia.com)
 [![Framework](https://img.shields.io/badge/PyTorch-2.5.1%2BCUDA%2012.1-EE4C2C?logo=pytorch)](https://pytorch.org)
 [![Inference Engine](https://img.shields.io/badge/Inference-ONNX%20Runtime%20WASM-005CED)](https://onnxruntime.ai)
@@ -10,8 +10,7 @@
 ---
 
 ## 🌐 Live Public Deployment
-- **Public HTTPS Link:** [https://temporary-flying-fjord-idncre6.vercel.app](https://temporary-flying-fjord-idncre6.vercel.app)
-- **Claim Deployment URL:** [Claim on Vercel](https://vercel.com/claim-deployment?code=8f8b371d-d2a9-44b6-b40b-92b135526699)
+- **Public HTTPS Link:** [https://roadtrace-ai.vercel.app](https://roadtrace-ai.vercel.app)
 
 ---
 
