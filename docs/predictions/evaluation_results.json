@@ -1,0 +1,236 @@
+{
+  "num_samples": 10,
+  "mean_iou": 0.9977,
+  "samples": [
+    {
+      "sample": "sample_000",
+      "iou": 0.9977,
+      "curve": {
+        "direction": "curves_right",
+        "confidence": 0.3,
+        "drift": -0.0898,
+        "centerline": [
+          [
+            0.5,
+            0.470703125
+          ],
+          [
+            0.7,
+            0.42578125
+          ],
+          [
+            0.9,
+            0.380859375
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_001",
+      "iou": 0.9981,
+      "curve": {
+        "direction": "straight",
+        "confidence": 0.02,
+        "drift": -0.0059,
+        "centerline": [
+          [
+            0.5,
+            0.552734375
+          ],
+          [
+            0.7,
+            0.548828125
+          ],
+          [
+            0.9,
+            0.546875
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_002",
+      "iou": 0.997,
+      "curve": {
+        "direction": "straight",
+        "confidence": 0.02,
+        "drift": -0.0059,
+        "centerline": [
+          [
+            0.5,
+            0.5078125
+          ],
+          [
+            0.7,
+            0.50390625
+          ],
+          [
+            0.9,
+            0.501953125
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_003",
+      "iou": 0.998,
+      "curve": {
+        "direction": "straight",
+        "confidence": 0.1,
+        "drift": 0.0293,
+        "centerline": [
+          [
+            0.5,
+            0.431640625
+          ],
+          [
+            0.7,
+            0.447265625
+          ],
+          [
+            0.9,
+            0.4609375
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_004",
+      "iou": 0.9962,
+      "curve": {
+        "direction": "curves_left",
+        "confidence": 0.55,
+        "drift": 0.166,
+        "centerline": [
+          [
+            0.5,
+            0.447265625
+          ],
+          [
+            0.7,
+            0.53125
+          ],
+          [
+            0.9,
+            0.61328125
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_005",
+      "iou": 0.9981,
+      "curve": {
+        "direction": "straight",
+        "confidence": 0.14,
+        "drift": 0.041,
+        "centerline": [
+          [
+            0.5,
+            0.505859375
+          ],
+          [
+            0.7,
+            0.525390625
+          ],
+          [
+            0.9,
+            0.546875
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_006",
+      "iou": 0.9981,
+      "curve": {
+        "direction": "curves_left",
+        "confidence": 0.27,
+        "drift": 0.082,
+        "centerline": [
+          [
+            0.5,
+            0.505859375
+          ],
+          [
+            0.7,
+            0.548828125
+          ],
+          [
+            0.9,
+            0.587890625
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_007",
+      "iou": 0.9984,
+      "curve": {
+        "direction": "straight",
+        "confidence": 0.25,
+        "drift": -0.0762,
+        "centerline": [
+          [
+            0.5,
+            0.564453125
+          ],
+          [
+            0.7,
+            0.52734375
+          ],
+          [
+            0.9,
+            0.48828125
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_008",
+      "iou": 0.9972,
+      "curve": {
+        "direction": "straight",
+        "confidence": 0.03,
+        "drift": 0.0078,
+        "centerline": [
+          [
+            0.5,
+            0.517578125
+          ],
+          [
+            0.7,
+            0.51953125
+          ],
+          [
+            0.9,
+            0.525390625
+          ]
+        ]
+      }
+    },
+    {
+      "sample": "sample_009",
+      "iou": 0.9978,
+      "curve": {
+        "direction": "curves_left",
+        "confidence": 0.38,
+        "drift": 0.1152,
+        "centerline": [
+          [
+            0.5,
+            0.462890625
+          ],
+          [
+            0.7,
+            0.521484375
+          ],
+          [
+            0.9,
+            0.578125
+          ]
+        ]
+      }
+    }
+  ]
+}

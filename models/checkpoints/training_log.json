@@ -1,0 +1,110 @@
+[
+  {
+    "epoch": 1,
+    "lr": 0.00075,
+    "train": {
+      "loss": 0.2659,
+      "iou": {
+        "background": 0.9577,
+        "direct_drivable": 0.8467,
+        "alt_drivable": 0.577,
+        "mean_iou": 0.7938
+      },
+      "dice": {
+        "background": 0.9784,
+        "direct_drivable": 0.917,
+        "alt_drivable": 0.7317,
+        "mean_dice": 0.8757
+      },
+      "time": 21.5
+    },
+    "val": {
+      "loss": 0.067,
+      "iou": {
+        "background": 0.9922,
+        "direct_drivable": 0.9682,
+        "alt_drivable": 0.8527,
+        "mean_iou": 0.9377
+      },
+      "dice": {
+        "background": 0.9961,
+        "direct_drivable": 0.9839,
+        "alt_drivable": 0.9205,
+        "mean_dice": 0.9668
+      },
+      "time": 1.6
+    }
+  },
+  {
+    "epoch": 2,
+    "lr": 0.0002500000000000001,
+    "train": {
+      "loss": 0.0515,
+      "iou": {
+        "background": 0.9936,
+        "direct_drivable": 0.9762,
+        "alt_drivable": 0.9026,
+        "mean_iou": 0.9575
+      },
+      "dice": {
+        "background": 0.9968,
+        "direct_drivable": 0.9879,
+        "alt_drivable": 0.9488,
+        "mean_dice": 0.9778
+      },
+      "time": 17.7
+    },
+    "val": {
+      "loss": 0.0328,
+      "iou": {
+        "background": 0.9936,
+        "direct_drivable": 0.9789,
+        "alt_drivable": 0.8939,
+        "mean_iou": 0.9555
+      },
+      "dice": {
+        "background": 0.9968,
+        "direct_drivable": 0.9893,
+        "alt_drivable": 0.944,
+        "mean_dice": 0.9767
+      },
+      "time": 1.6
+    }
+  },
+  {
+    "epoch": 3,
+    "lr": 0.0,
+    "train": {
+      "loss": 0.0321,
+      "iou": {
+        "background": 0.9958,
+        "direct_drivable": 0.9797,
+        "alt_drivable": 0.9435,
+        "mean_iou": 0.973
+      },
+      "dice": {
+        "background": 0.9979,
+        "direct_drivable": 0.9897,
+        "alt_drivable": 0.9709,
+        "mean_dice": 0.9862
+      },
+      "time": 17.1
+    },
+    "val": {
+      "loss": 0.0221,
+      "iou": {
+        "background": 0.9974,
+        "direct_drivable": 0.9867,
+        "alt_drivable": 0.9585,
+        "mean_iou": 0.9809
+      },
+      "dice": {
+        "background": 0.9987,
+        "direct_drivable": 0.9933,
+        "alt_drivable": 0.9788,
+        "mean_dice": 0.9903
+      },
+      "time": 1.6
+    }
+  }
+]
