@@ -308,7 +308,8 @@ def prepare_balanced_dataset(data_root: str, num_train: int = 1000, num_val: int
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_root', default='data/bdd100k', help='Dataset root path')
+    parser.add_argument('--data_root', default='data/bdd100k_synthetic',
+                        help='Output directory for generated demonstration data')
     parser.add_argument('--train_count', type=int, default=1000)
     parser.add_argument('--val_count', type=int, default=200)
     args = parser.parse_args()

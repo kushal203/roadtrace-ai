@@ -29,6 +29,44 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms.functional as TF
 
 
+def resolve_split_dirs(data_root: str, split: str) -> Tuple[str, str]:
+    """Find an image/mask split in common BDD100K layouts."""
+    image_candidates = [
+        os.path.join(data_root, 'images', '100k', split),
+        os.path.join(data_root, 'bdd100k', 'images', '100k', split),
+        os.path.join(data_root, 'images', '10k', split),
+        os.path.join(data_root, 'images', split),
+    ]
+    mask_candidates = [
+        os.path.join(data_root, 'drivable_maps', 'labels', split),
+        os.path.join(data_root, 'drivable_maps', split),
+        os.path.join(data_root, 'labels', 'drivable', 'masks', split),
+        os.path.join(data_root, 'labels', 'drivable', split),
+    ]
+    image_dir = next((p for p in image_candidates if os.path.isdir(p)), image_candidates[0])
+    mask_dir = next((p for p in mask_candidates if os.path.isdir(p)), mask_candidates[0])
+    return image_dir, mask_dir
+
+
+def collect_image_mask_pairs(images_dir: str, masks_dir: str) -> Tuple[List[Tuple[str, str]], int]:
+    """Match images with official BDD drivable ID masks without silently hiding misses."""
+    image_files = sorted(
+        p for p in glob.glob(os.path.join(images_dir, '*'))
+        if os.path.splitext(p)[1].lower() in {'.jpg', '.jpeg', '.png'}
+    )
+    pairs: List[Tuple[str, str]] = []
+    for img_path in image_files:
+        basename = os.path.splitext(os.path.basename(img_path))[0]
+        candidates = (
+            os.path.join(masks_dir, f'{basename}_drivable_id.png'),
+            os.path.join(masks_dir, f'{basename}.png'),
+        )
+        mask_path = next((p for p in candidates if os.path.isfile(p)), None)
+        if mask_path:
+            pairs.append((img_path, mask_path))
+    return pairs, len(image_files)
+
+
 class BDD100KDrivableDataset(Dataset):
     """BDD100K Drivable Area Segmentation Dataset."""
     
@@ -54,26 +92,19 @@ class BDD100KDrivableDataset(Dataset):
         self.img_size = img_size
         self.augment = augment
         
-        # Find all images
-        image_files = sorted(glob.glob(os.path.join(images_dir, '*.jpg')))
-        if not image_files:
-            image_files = sorted(glob.glob(os.path.join(images_dir, '*.png')))
-        
         # Match images to masks
-        self.pairs: List[Tuple[str, str]] = []
-        for img_path in image_files:
-            basename = os.path.splitext(os.path.basename(img_path))[0]
-            # BDD100K mask naming convention: <image_name>_drivable_id.png
-            mask_path = os.path.join(masks_dir, f"{basename}_drivable_id.png")
-            if os.path.exists(mask_path):
-                self.pairs.append((img_path, mask_path))
+        self.pairs, image_count = collect_image_mask_pairs(images_dir, masks_dir)
         
         if not self.pairs:
             raise FileNotFoundError(
                 f"No matching image-mask pairs found.\n"
-                f"  Images dir: {images_dir} ({len(image_files)} images)\n"
+                f"  Images dir: {images_dir} ({image_count} images)\n"
                 f"  Masks dir:  {masks_dir}"
             )
+
+        if len(self.pairs) != image_count:
+            print(f"WARNING: matched {len(self.pairs)}/{image_count} images in {images_dir}; "
+                  "unmatched images will be excluded")
         
         # Limit to subset
         if subset_size and subset_size < len(self.pairs):
@@ -124,8 +155,11 @@ class BDD100KDrivableDataset(Dataset):
         # Mask to long tensor
         mask = torch.from_numpy(np.array(mask)).long()
         
-        # Clamp mask values to valid range
-        mask = torch.clamp(mask, 0, self.NUM_CLASSES - 1)
+        values = torch.unique(mask)
+        if torch.any((values < 0) | (values >= self.NUM_CLASSES)):
+            raise ValueError(
+                f"Invalid drivable mask values in {mask_path}: {values.tolist()}; expected only 0, 1, 2"
+            )
         
         return image, mask
 
@@ -139,10 +173,8 @@ def create_dataloaders(
 ) -> Tuple[DataLoader, DataLoader]:
     """Create train and validation dataloaders."""
     
-    train_images = os.path.join(data_root, 'images', '10k', 'train')
-    train_masks = os.path.join(data_root, 'drivable_maps', 'labels', 'train')
-    val_images = os.path.join(data_root, 'images', '10k', 'val')
-    val_masks = os.path.join(data_root, 'drivable_maps', 'labels', 'val')
+    train_images, train_masks = resolve_split_dirs(data_root, 'train')
+    val_images, val_masks = resolve_split_dirs(data_root, 'val')
     
     train_dataset = BDD100KDrivableDataset(
         images_dir=train_images,
@@ -188,14 +220,15 @@ def validate_dataset(data_root: str) -> dict:
         'train_images': 0,
         'train_masks': 0,
         'train_pairs': 0,
+        'train_unmatched_images': 0,
         'val_images': 0,
         'val_masks': 0,
         'val_pairs': 0,
+        'val_unmatched_images': 0,
     }
     
     for split in ['train', 'val']:
-        img_dir = os.path.join(data_root, 'images', '10k', split)
-        mask_dir = os.path.join(data_root, 'drivable_maps', 'labels', split)
+        img_dir, mask_dir = resolve_split_dirs(data_root, split)
         
         if not os.path.isdir(img_dir):
             report['errors'].append(f"Missing image directory: {img_dir}")
@@ -207,28 +240,27 @@ def validate_dataset(data_root: str) -> dict:
             report['valid'] = False
             continue
         
-        images = glob.glob(os.path.join(img_dir, '*.jpg'))
-        masks = glob.glob(os.path.join(mask_dir, '*_drivable_id.png'))
+        pairs, image_count = collect_image_mask_pairs(img_dir, mask_dir)
+        images = [p[0] for p in pairs]
+        masks = [p[1] for p in pairs]
         
-        report[f'{split}_images'] = len(images)
+        report[f'{split}_images'] = image_count
         report[f'{split}_masks'] = len(masks)
+        report[f'{split}_pairs'] = len(pairs)
+        report[f'{split}_unmatched_images'] = image_count - len(pairs)
         
-        # Count matching pairs
-        mask_basenames = {os.path.basename(m).replace('_drivable_id.png', '') for m in masks}
-        pairs = sum(1 for img in images 
-                   if os.path.splitext(os.path.basename(img))[0] in mask_basenames)
-        report[f'{split}_pairs'] = pairs
-        
-        if pairs == 0:
+        if not pairs:
             report['errors'].append(f"No matching pairs in {split} split")
             report['valid'] = False
+        # Some BDD100K frames are shipped without a drivable-area annotation;
+        # the loader deliberately excludes those images from segmentation.
     
     # Check a sample mask
     if report['valid']:
-        sample_mask_dir = os.path.join(data_root, 'drivable_maps', 'labels', 'train')
-        sample_masks = glob.glob(os.path.join(sample_mask_dir, '*.png'))[:1]
-        if sample_masks:
-            mask = np.array(Image.open(sample_masks[0]))
+        _, sample_mask_dir = resolve_split_dirs(data_root, 'train')
+        sample_pairs, _ = collect_image_mask_pairs(resolve_split_dirs(data_root, 'train')[0], sample_mask_dir)
+        if sample_pairs:
+            mask = np.array(Image.open(sample_pairs[0][1]))
             unique_vals = np.unique(mask)
             report['mask_unique_values'] = unique_vals.tolist()
             report['mask_shape'] = mask.shape
@@ -243,7 +275,7 @@ def validate_dataset(data_root: str) -> dict:
 if __name__ == '__main__':
     import sys
     
-    data_root = sys.argv[1] if len(sys.argv) > 1 else 'data/bdd100k'
+    data_root = sys.argv[1] if len(sys.argv) > 1 else 'data/bdd100k_real'
     
     print(f"Validating dataset at: {data_root}")
     report = validate_dataset(data_root)

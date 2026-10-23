@@ -4,6 +4,14 @@ __pycache__/
 *.py[cod]
 *.log
 
+# Local real training data and large archive (keep out of Git deployments)
+bdd100k/
+data/bdd100k_zenodo.zip
+data/bdd100k_assembled.zip
+data/bdd100k_parts/
+data/bdd100k_real/
+models/checkpoints_real/
+
 # Local secrets and environment settings
 .env
 .env.*

@@ -2,7 +2,7 @@
 RoadTrace AI - Training Script for Road Segmentation
 
 Usage:
-  python scripts/train.py --data_root data/bdd100k --epochs 3 --batch_size 4 --subset 1000
+  python scripts/train.py --data_root data/bdd100k_real --epochs 10 --batch_size 4
 
 Features:
   - Mixed precision training (AMP)
@@ -230,6 +230,18 @@ def train(args):
         print("\nPlease download the BDD100K dataset first.")
         print("See docs/DATASET_REPORT.md for instructions.")
         sys.exit(1)
+
+    generated_prefixes = ('train_road_', 'train_floor_', 'train_stairs_', 'train_outdoor_')
+    generated_images = [
+        os.path.basename(image_path)
+        for image_path, _ in train_loader.dataset.pairs
+        if os.path.basename(image_path).startswith(generated_prefixes)
+    ]
+    if generated_images and not args.allow_synthetic:
+        raise ValueError(
+            f"Refusing to train on generated demo data ({len(generated_images)} files detected). "
+            "Use real labeled driving images, or pass --allow_synthetic only for a demo run."
+        )
     
     # Loss function with increased background penalty for negative rejection
     class_weights = torch.tensor([0.8, 1.8, 1.4], dtype=torch.float32).to(device)
@@ -372,9 +384,9 @@ def train(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='RoadTrace AI - Train Road Segmentation')
-    parser.add_argument('--data_root', type=str, default='data/bdd100k',
+    parser.add_argument('--data_root', type=str, default='data/bdd100k_real',
                        help='Path to BDD100K dataset root')
-    parser.add_argument('--epochs', type=int, default=3,
+    parser.add_argument('--epochs', type=int, default=10,
                        help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=4,
                        help='Batch size')
@@ -386,12 +398,14 @@ def parse_args():
                        help='Use subset of training data')
     parser.add_argument('--num_workers', type=int, default=2,
                        help='DataLoader workers')
-    parser.add_argument('--checkpoint_dir', type=str, default='models/checkpoints',
+    parser.add_argument('--checkpoint_dir', type=str, default='models/checkpoints_real',
                        help='Directory for checkpoints')
     parser.add_argument('--resume', action='store_true',
                        help='Resume from last checkpoint')
     parser.add_argument('--patience', type=int, default=5,
                        help='Early stopping patience')
+    parser.add_argument('--allow_synthetic', action='store_true',
+                       help='Allow generated demo data (not suitable for real-world accuracy claims)')
     return parser.parse_args()
 
 
